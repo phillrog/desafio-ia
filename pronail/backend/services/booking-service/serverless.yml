@@ -1,0 +1,103 @@
+service: booking
+plugins:
+  - serverless-webpack
+custom:
+  webpack:
+    includeModules: true
+    packager: "npm"
+    excludeFiles: src/**/*.test.js
+provider:
+  name: aws
+  runtime: nodejs18.x
+  timeout: 29
+  versionFunctions: false
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  environment:
+    BOOKING_TABLE: ${self:service}-${self:provider.stage}-bookings
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:DescribeTable
+      Resource: "*"
+  httpApi:
+    id:
+      "Fn::ImportValue": HttpAPI-${sls:stage}
+functions:
+  createBooking:
+    handler: src/handlers/booking.create
+    events:
+      - httpApi:
+          path: /bookings
+          method: post
+
+  getBooking:
+    handler: src/handlers/booking.get
+    events:
+      - httpApi:
+          path: /bookings/{id}
+          method: get
+
+  updateBooking:
+    handler: src/handlers/booking.update
+    events:
+      - httpApi:
+          path: /bookings/{id}
+          method: put
+
+  deleteBooking:
+    handler: src/handlers/booking.del
+    events:
+      - httpApi:
+          path: /bookings/{id}
+          method: delete
+
+  listBookings:
+    handler: src/handlers/booking.list
+    events:
+      - httpApi:
+          path: /bookings
+          method: get
+
+resources:
+  Resources:
+    BookingsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.BOOKING_TABLE}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: clientId
+            AttributeType: S
+          - AttributeName: technicianId
+            AttributeType: S
+          - AttributeName: dateTime
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: ClientIdIndex
+            KeySchema:
+              - AttributeName: clientId
+                KeyType: HASH
+              - AttributeName: dateTime
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: TechnicianIdIndex
+            KeySchema:
+              - AttributeName: technicianId
+                KeyType: HASH
+              - AttributeName: dateTime
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
