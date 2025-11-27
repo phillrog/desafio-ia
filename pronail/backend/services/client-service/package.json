@@ -1,5 +1,5 @@
 {
-    "name": "healthhub-client-service",
+    "name": "client-service",
     "version": "1.0.0",
     "dependencies": {
         "@types/aws-lambda": "^8.10.85",

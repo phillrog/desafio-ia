@@ -15,7 +15,7 @@ provider:
   region: ${opt:region, 'us-east-1'}
   environment:
     CLIENT_TABLE: ${self:service}-${self:provider.stage}-clients
-    # USER_POOL_ID: ${cf:healthhub-auth-${self:provider.stage}.UserPoolId}
+    
   iamRoleStatements:
     - Effect: Allow
       Action:
