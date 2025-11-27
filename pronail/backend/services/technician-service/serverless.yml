@@ -1,0 +1,102 @@
+service: technician
+plugins:
+  - serverless-webpack
+custom:
+  webpack:
+    includeModules: true
+    packager: "npm"
+    excludeFiles: src/**/*.test.js
+provider:
+  name: aws
+  runtime: nodejs18.x
+  timeout: 29
+  versionFunctions: false
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  environment:
+    TECHNICIAN_TABLE: ${self:service}-${self:provider.stage}-technicians
+    # USER_POOL_ID: ${cf:healthhub-auth-${self:provider.stage}.UserPoolId}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:DescribeTable
+      Resource: "*"
+    - Effect: Allow
+      Action:
+        - cognito-idp:AdminGetUser
+      Resource: "*"
+  httpApi:
+    id:
+      "Fn::ImportValue": HttpAPI-${sls:stage}
+functions:
+  createTechnician:
+    handler: src/handlers/technician.create
+    events:
+      - httpApi:
+          path: /technicians
+          method: post
+
+  getTechnician:
+    handler: src/handlers/technician.get
+    events:
+      - httpApi:
+          path: /technicians/{id}
+          method: get
+
+  updateTechnician:
+    handler: src/handlers/technician.update
+    events:
+      - httpApi:
+          path: /technicians/{id}
+          method: put
+
+  deleteTechnician:
+    handler: src/handlers/technician.del
+    events:
+      - httpApi:
+          path: /technicians/{id}
+          method: delete
+
+  listTechnicians:
+    handler: src/handlers/technician.list
+    events:
+      - httpApi:
+          path: /technicians
+          method: get
+
+resources:
+  Resources:
+    TechniciansTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.TECHNICIAN_TABLE}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: specialization
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: UserIdIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+          - IndexName: SpecializationIndex
+            KeySchema:
+              - AttributeName: specialization
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
