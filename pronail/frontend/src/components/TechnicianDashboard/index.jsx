@@ -11,6 +11,7 @@ import {
 import {
   technicianService,
   clientService,
+  bookingService,
 } from "../../services/api";
 import { Card } from "../SharedComponents";
 
@@ -18,7 +19,8 @@ const Dashboard = () => {
   const [data, setData] = useState([]);
   const [totalClients, setTotalClients] = useState(0);
   const [totalTechnicians, setTotalTechnicians] = useState(0);
-    
+  const [totalBookings, setTotalBookings] = useState(0);
+  
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -28,11 +30,13 @@ const Dashboard = () => {
         const [clients, technicians, bookings, aiInteractions] =
           await Promise.all([
             clientService.getClients(),
-            technicianService.getTechnicians()            
+            technicianService.getTechnicians(),
+            bookingService.getBookings()
           ]);
 
         setTotalClients(clients.data.length);
         setTotalTechnicians(technicians.data.length);
+        setTotalBookings(bookings.data.length);        
 
         setData([
           { name: "Dec", value: 400 },
