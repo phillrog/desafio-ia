@@ -1,7 +1,6 @@
 import { Calendar, FileText, Home, MessageSquare, Scissors } from "lucide-react";
 import React, { useState } from "react";
 import Bookings from "../Booking";
-import NailsRecords from "../NailsRecords";
 import ClientDashboard from "../ClientDashboard";
 import VirtualAssistant from "../VirtualAssistant";
 
@@ -32,8 +31,6 @@ const ClientView = ({ personRole, personId }) => {
     switch (activeTab) {
       case "inicio": 
       return <ClientDashboard personId={personId} setActiveTab={handleTabChange} />;
-      case "historicoUnhas":
-        return <NailsRecords personId={personId} />;
       case "agendamentos": 
         return <Bookings personId={personId} />;
       case "assistenteVirtual":
@@ -44,12 +41,11 @@ const ClientView = ({ personRole, personId }) => {
   };
 
   return (
-    <div className="flex h-screen bg-pink-50"> {/* Fundo levemente rosa */}
+    <div className="flex h-screen bg-pink-50">
       
       {/* MENU LATERAL */}
       <nav className="w-64 bg-white shadow-lg p-6 flex flex-col">
         
-        {/* LOGO E SAUDAÇÃO (Como na tela de Login) */}
         <div className="mb-8 border-b pb-4 border-pink-100">
             <div className="flex items-center space-x-2 mb-2">
                 <span 
@@ -71,40 +67,25 @@ const ClientView = ({ personRole, personId }) => {
             </p>
         </div>
         
-        {/* ITENS DO MENU (Traduzidos e Estilizados) */}
         <div className="space-y-2 flex-grow">
           <MenuItem
             icon={Home}
-            label="Início" // Traduzido
+            label="Início" 
             active={activeTab === "inicio"}
             onClick={() => setActiveTab("inicio")}
           />
           
           <MenuItem
             icon={Calendar}
-            label="Agendamentos" // Traduzido
+            label="Agendamentos" 
             active={activeTab === "agendamentos"}
             onClick={() => setActiveTab("agendamentos")}
-          />
-          {/* <MenuItem
-            icon={MessageSquare}
-            label="Assistente Virtual" // Traduzido
-            active={activeTab === "assistenteVirtual"}
-            onClick={() => setActiveTab("assistenteVirtual")}
-          /> */}
-          <MenuItem
-            icon={FileText}
-            label="Histórico" // Traduzido
-            active={activeTab === "historicoUnhas"}
-            onClick={() => setActiveTab("historicoUnhas")}
-          />
+          />          
         </div>
-        
-        {/* Você pode adicionar um rodapé aqui, como um botão de Logout */}
+      
 
       </nav>
       
-      {/* CONTEÚDO PRINCIPAL */}
       <main className="flex-grow p-6 overflow-y-auto">{renderContent()}</main>
 
       <button
@@ -112,9 +93,8 @@ const ClientView = ({ personRole, personId }) => {
         className="fixed bottom-8 right-8 p-4 bg-pink-600 text-white rounded-full shadow-2xl 
                    hover:bg-pink-700 transition-all duration-300 transform 
                    hover:scale-110 focus:outline-none focus:ring-4 focus:ring-pink-300 z-50"
-        title="Assistente Virtual" // Dica de ferramenta
+        title="Assistente Virtual" 
       >
-        {/* ÍCONE DE TESOURA/ALICATE */}
         <Scissors className="h-7 w-7" />
       </button>
     </div>
