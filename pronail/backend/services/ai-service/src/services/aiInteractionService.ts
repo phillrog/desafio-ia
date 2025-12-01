@@ -1,7 +1,6 @@
 import * as dynamoose from "dynamoose";
 import { Document } from "dynamoose/dist/Document";
-import { Polly, Translate, S3 } from "aws-sdk";
-import axios from "axios";
+import { S3 } from "aws-sdk";
 import pkg2 from "uuid";
 const { v4: uuidv4 } = pkg2;
 import { OpenAI } from "openai";
@@ -55,28 +54,19 @@ const AIInteractionModel = dynamoose.model<AIInteraction>(
   }
 );
 
-export class AIInteractionService {
-  private polly: Polly;
-  private translate: Translate;
+export class AIInteractionService {  
   private openai: OpenAI;
   private s3: S3;
   private bookingService: BookingService;
   private technicianService: TechnicianService;
-  private conversationContext: {
-    technicianId?: string;
-    dateTime?: string;
-  };
 
   constructor() {
-    this.polly = new Polly();
-    this.translate = new Translate({ region: "us-east-1" });
     this.s3 = new S3();
     this.openai = new OpenAI({
       apiKey: process.env.OPEN_AI_KEY!,
     });
     this.bookingService = new BookingService();
     this.technicianService = new TechnicianService("useless");
-    this.conversationContext = {};
   }
 
   async create(
@@ -177,6 +167,7 @@ export class AIInteractionService {
           "You are an AI assistant for a beautycare application. You can answer general nail questions, hair , face, provide health advice, and assist with scheduling bookings. Always prioritize client safety and refer to professional beauty advice when appropriate. When listing available technicians, always include their ID, name, specialty, and registration number. When the user confirms they want to schedule an booking, you MUST use the create_booking function with the technician's ID (not registration number) and the specified time. Do not pretend to create an booking without calling the function.",
       };
       
+      //@ts-ignore
       const response = await this.openai.chat.completions.create({
         model: "gpt-4o-mini",
         messages: [systemMessage, ...messages],
@@ -222,6 +213,7 @@ export class AIInteractionService {
           }
         }
 
+        //@ts-ignore
         const finalResponse = await this.openai.chat.completions.create({
           model: "gpt-4o-mini",
           messages: [
@@ -262,12 +254,12 @@ export class AIInteractionService {
       console.log("ClientId:", clientId);
       console.log("TechnicianId:", technicianId);
       console.log("DateTime:", dateTime);
-
+      //@ts-ignore
       const booking = await this.bookingService.create({
         clientId,
         technicianId,
-        dateTime: new Date(dateTime).toISOString(),
-        status: "scheduled",
+        dateTime: dateTime,
+        status: "Agendado",
       });
       console.log("Booking created successfully:", booking);
       return booking;
@@ -276,50 +268,4 @@ export class AIInteractionService {
       throw error;
     }
   }  
-}
-
-async function runThread(apiKey: string, assistantId: string, message: string) {
-  const client = new OpenAI({
-    apiKey: apiKey,
-  });
-  const maxRetries: number = 3;
-  const retryDelay: number = 2;
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    try {
-      const run = await client.beta.threads.createAndRun({
-        thread: {
-          messages: [{ role: "user", content: message }],
-        },
-        assistant_id: assistantId,
-      });
-
-      let runStatus = run.status;
-      while (runStatus === "queued" || runStatus === "in_progress") {
-        await new Promise((resolve) => setTimeout(resolve, 3000));
-        const runLoop = await client.beta.threads.runs.retrieve(
-          run.thread_id,
-          run.id
-        );
-        console.log(runLoop.status);
-        runStatus = runLoop.status;
-
-        if (runStatus === "failed") {
-          console.log(runLoop);
-          throw new Error("Run failed");
-        }
-      }
-      const messages = await client.beta.threads.messages.list(run.thread_id);
-
-      return messages.data[0].content[0].text.value;
-    } catch (e) {
-      console.log(`Attempt ${attempt + 1} failed: ${e}`);
-      if (attempt < maxRetries - 1) {
-        console.log(`Retrying in ${retryDelay} seconds...`);
-        await new Promise((resolve) => setTimeout(resolve, retryDelay * 1000));
-      } else {
-        console.log("Max retries reached. Aborting.");
-        throw e;
-      }
-    }
-  }
 }

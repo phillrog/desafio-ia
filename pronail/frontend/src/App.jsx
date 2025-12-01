@@ -5,37 +5,37 @@ import ClientView from "./components/ClientView";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [personRole, setPersonRole] = useState(null);
-  const [personId, setPersonId] = useState(null);
+  const [userRole, setUserRole] = useState(null);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const storedPersonRole = localStorage.getItem("personRole");
-    const storedPersonId = localStorage.getItem("personId");
+    const storedUserRole = localStorage.getItem("userRole");
+    const storedUserId = localStorage.getItem("userId");
 
-    if (token && storedPersonRole && storedPersonId) {
+    if (token && storedUserRole && storedUserId) {
       setIsLoggedIn(true);
-      setPersonRole(storedPersonRole);
-      setPersonId(storedPersonId);
+      setUserRole(storedUserRole);
+      setUserId(storedUserId);
     }
   }, []);
 
   const handleLoginSuccess = (token, email, role) => {
     localStorage.setItem("token", token);
-    localStorage.setItem("personRole", role);
-    localStorage.setItem("personId", email);
+    localStorage.setItem("userRole", role);
+    localStorage.setItem("userId", email);
     setIsLoggedIn(true);
-    setPersonRole(role);
-    setPersonId(email);
+    setUserRole(role);
+    setUserId(email);
   };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("personRole");
-    localStorage.removeItem("personId");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("userId");
     setIsLoggedIn(false);
-    setPersonRole(null);
-    setPersonId(null);
+    setUserRole(null);
+    setUserId(null);
   };
 
   if (!isLoggedIn) {
@@ -50,10 +50,10 @@ const App = () => {
       >
         Sair
       </button>
-      {personRole && personRole === "client" ? (
-        <ClientView personRole={personRole} personId={personId} />
+      {userRole && userRole === "client" ? (
+        <ClientView userRole={userRole} userId={userId} />
       ) : (
-        <TechnicianView personRole={personRole} personId={personId} />
+        <TechnicianView userRole={userRole} userId={userId} />
       )}
     </div>
   );
