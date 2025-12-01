@@ -1,0 +1,11 @@
+services:
+  user-service:
+    path: services/user-service
+  ai-interaction-service:
+    path: services/ai-service
+  booking-service:
+    path: services/booking-service
+  technician-service:
+    path: services/technician-service
+  client-service:
+    path: services/client-service  
