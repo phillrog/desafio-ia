@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://wa0swcochl.execute-api.us-east-1.amazonaws.com';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -17,12 +17,12 @@ api.interceptors.request.use((config) => {
 export const authService = {
   login: (email, password) => api.post("/login", { email, password }),
   register: (email, password, role) =>
-    api.post("/persons", { email, password, role }),
+    api.post("/users", { email, password, role }),
 };
 
-export const personService = {
-  getCurrentPerson: () => api.get("/persons/me"),
-  register: (personData) => api.post("/register", personData),
+export const userService = {
+  getCurrentUser: () => api.get("/users/me"),
+  register: (userData) => api.post("/register", userData),
 };
 
 export const technicianService = {
@@ -51,13 +51,11 @@ export const bookingService = {
 
 
 export const aiInteractionService = {
-  virtualAssistant: (query, personId) =>
-    api.post("/ai-interactions/virtual-assistant", { query, personId }),
+  virtualAssistant: (query, userId) =>
+    api.post("/ai-interactions/virtual-assistant", { query, userId }),
   getAIInteractions: (params) => api.get("/ai-interactions", params),
   getAIInteraction: (id) => api.get(`/ai-interactions/${id}`),
-  createAIInteraction: (data) => api.post("/ai-interactions", data),
-  textToSpeech: (text, language) =>
-    api.post("/ai-interactions/text-to-speech", { text, language }),
+  createAIInteraction: (data) => api.post("/ai-interactions", data)
 };
 
 export default api;

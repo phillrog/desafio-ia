@@ -8,7 +8,7 @@ class Booking extends Document {
   clientId: string;
   technicianId: string;
   dateTime: string;
-  status: "scheduled" | "completed" | "cancelled";
+  status: "Agendado" | "Encerrado" | "Cancelado";
   notes?: string;
   createdAt: Date;
   updatedAt?: Date;
@@ -39,7 +39,7 @@ const BookingSchema = new dynamoose.Schema({
   dateTime: String,
   status: {
     type: String,
-    enum: ["scheduled", "completed", "cancelled"],
+    enum: ["Agendado", "Encerrado", "Cancelado"],
   },
   notes: {
     type: String,
@@ -71,7 +71,7 @@ export class BookingService {
         ...data,
         id: uuidv4(),
         createdAt: new Date(),
-        status: data.status || "scheduled",
+        status: data.status || "Agendado",
       });
 
       await newBooking.save();
