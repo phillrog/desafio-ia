@@ -101,13 +101,14 @@ const Bookings = ({ userId }) => {
                   <div className="text-sm">
                     {/* Dados da Reserva traduzidos e formatados */}
                     <p className="font-semibold text-pink-700">
-                      Data: {new Date(booking.dateTime).toISOString()}
+                      Data: {new Date(booking.dateTime).toLocaleString("pt-BR")}
                     </p>
                     <p className="text-gray-700">
                       Profissional:{" "}
                       {technicians.find((e) => e.id === booking.technicianId) &&
                         technicians.find((e) => e.id === booking.technicianId)
-                          .firstName}
+                          .firstName + ' ( ' + technicians.find((e) => e.id === booking.technicianId)
+                          .specialization + ')'} 
                     </p>
                     <p className="text-gray-600">Status: **{booking.status}**</p>
                     {booking.notes && <p className="text-gray-500 italic">Observações: {booking.notes}</p>}
