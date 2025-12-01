@@ -14,7 +14,7 @@ const MenuItem = ({ icon: Icon, label, active, onClick }) => (
   </div>
 );
 
-const TechnicianView = ({ personRole, personId }) => {
+const TechnicianView = ({ userRole, userId }) => {
   
   const [activeTab, setActiveTab] = useState("painel");
 
@@ -49,7 +49,7 @@ const TechnicianView = ({ personRole, personId }) => {
             Sua beleza na hora marcada
           </p>
           <p className="mt-4 text-md text-gray-700 font-semibold"> 
-            Olá, <span className="text-pink-600">{personId}</span>!
+            Olá, <span className="text-pink-600">{userId}</span>!
           </p>
         </div>
         

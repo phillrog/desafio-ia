@@ -27,7 +27,7 @@ const Dashboard = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const [clients, technicians, bookings, aiInteractions] =
+        const [clients, technicians, bookings] =
           await Promise.all([
             clientService.getClients(),
             technicianService.getTechnicians(),
@@ -37,10 +37,16 @@ const Dashboard = () => {
         setTotalClients(clients.data.length);
         setTotalTechnicians(technicians.data.length);
         setTotalBookings(bookings.data.length);        
-
-        setData([
-          { name: "Dec", value: 400 },
-        ]);
+        
+        (clients.data || []).forEach(c => {
+          const historico = bookings.data.filter(b => b.clientId == c.id);
+          historico.forEach(h => {
+            setData([
+              { cliente: c.id, agenda: new Date(h.dateTime).toLocaleString('pt-BR') },
+            ]);   
+          })           
+        });
+        
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {
@@ -65,30 +71,25 @@ const Dashboard = () => {
     <div className="space-y-6">
       <h2 className="text-2xl font-bold text-gray-800">Dashboard</h2>
       <div className="grid grid-cols-2 gap-4">
-        <Card title="Total Clients" value={totalClients} color="blue" />
-        <Card title="Total Technicians" value={totalTechnicians} color="green" />
+        <Card title="Total Clientes" value={totalClients} color="blue" />
+        <Card title="Total Profissionais" value={totalTechnicians} color="green" />
         <Card
-          title="Total Bookings"
+          title="Total Agendamentos"
           value={totalBookings}
           color="purple"
-        />
-        <Card
-          title="AI Interactions"
-          value={totalAIInteractions}
-          color="orange"
-        />
+        />       
       </div>
       <div className="bg-white p-4 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-4">
-          Client Interactions Over Time
+        Interações com o cliente ao longo do tempo
         </h3>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
+            <XAxis dataKey="cliente" />
             <YAxis />
             <Tooltip />
-            <Line type="monotone" dataKey="value" stroke="#8884d8" />
+            <Line type="monotone" dataKey="agenda" stroke="#8884d8" />
           </LineChart>
         </ResponsiveContainer>
       </div>

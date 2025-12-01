@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { personService } from "../../services/api";
+import { userService } from "../../services/api";
 
 const Register = ({ setIsRegistering }) => {
   const [formData, setFormData] = useState({
@@ -35,7 +35,7 @@ const Register = ({ setIsRegistering }) => {
     
     setIsLoading(true);
     try {
-      await personService.register(formData);
+      await userService.register(formData);
 
       // Feedback de sucesso (você pode substituir por um toast ou modal)
       alert("Cadastro realizado com sucesso! Faça login para continuar.");
@@ -64,8 +64,8 @@ const Register = ({ setIsRegistering }) => {
           // Aplicação da cor temática no foco
           className="appearance-none relative block w-full px-3 py-2 border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm"
         >
-          <option value="client">Cliente (Quero agendar)</option>
-          <option value="technician">Profissional (Ofereço serviços)</option>
+          <option value="client">Cliente</option>
+          <option value="technician">Profissional</option>
         </select>
       </div>
       

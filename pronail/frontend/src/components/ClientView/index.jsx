@@ -17,7 +17,7 @@ const MenuItem = ({ icon: Icon, label, active, onClick }) => (
   </div>
 );
 
-const ClientView = ({ personRole, personId }) => {
+const ClientView = ({ userRole, userId }) => {
   
   const [activeTab, setActiveTab] = useState("inicio");
   const [initialMessage, setInitialMessage] = useState(null);
@@ -30,13 +30,13 @@ const ClientView = ({ personRole, personId }) => {
   const renderContent = () => {
     switch (activeTab) {
       case "inicio": 
-      return <ClientDashboard personId={personId} setActiveTab={handleTabChange} />;
+      return <ClientDashboard userId={userId} setActiveTab={handleTabChange} />;
       case "agendamentos": 
-        return <Bookings personId={personId} />;
+        return <Bookings userId={userId} />;
       case "assistenteVirtual":
-        return <VirtualAssistant personId={personId} initialMessage={initialMessage} setInitialMessage={setInitialMessage} />;
+        return <VirtualAssistant userId={userId} initialMessage={initialMessage} setInitialMessage={setInitialMessage} />;
       default:
-        return <ClientDashboard personId={personId} setActiveTab={handleTabChange} />;
+        return <ClientDashboard userId={userId} setActiveTab={handleTabChange} />;
     }
   };
 
@@ -63,7 +63,7 @@ const ClientView = ({ personRole, personId }) => {
                 Sua beleza na hora marcada
             </p>
             <p className="mt-4 text-sm text-gray-600">
-                Olá, {personId}!
+                Olá, {userId}!
             </p>
         </div>
         

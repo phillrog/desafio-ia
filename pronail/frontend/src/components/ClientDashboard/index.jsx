@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { clientService, bookingService } from "../../services/api";
 import { Scissors } from "lucide-react";
 
-const ClientDashboard = ({ personId, setActiveTab }) => {
+const ClientDashboard = ({ userId, setActiveTab }) => {
   const [client, setClient] = useState(null);
   const [upcomingBookings, setUpcomingBookings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -10,7 +10,7 @@ const ClientDashboard = ({ personId, setActiveTab }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!personId) {
+      if (!userId) {
         // Tradução do erro
         setError("ID da Pessoa está faltando");
         setIsLoading(false);
@@ -19,12 +19,12 @@ const ClientDashboard = ({ personId, setActiveTab }) => {
 
       try {
         setIsLoading(true);
-        const clientResponse = await clientService.getClient(personId);
+        const clientResponse = await clientService.getClient(userId);
         setClient(clientResponse.data);
 
         const bookingsResponse = await bookingService.getBookings({
-          clientId: personId,
-          status: "scheduled",
+          clientId: userId,
+          status: "Agendado",
         });
         setUpcomingBookings(bookingsResponse.data);
 
@@ -38,7 +38,7 @@ const ClientDashboard = ({ personId, setActiveTab }) => {
     };
 
     fetchData();
-  }, [personId]);
+  }, [userId]);
 
   if (isLoading) {
     return (
@@ -95,7 +95,7 @@ const ClientDashboard = ({ personId, setActiveTab }) => {
                   className="p-3 bg-pink-50 rounded-lg border-l-4 border-pink-500 transition-shadow hover:shadow-md"
                 >
                   {/* Formato PT-BR */}
-                  Agendado para: **{new Date(booking.dateTime).toLocaleString("pt-BR")}**
+                  Agendado para: <strong>{new Date(booking.dateTime).toLocaleString("pt-BR")}</strong>
                 </li>
               ))}
           </ul>

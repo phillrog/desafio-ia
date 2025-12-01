@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { bookingService, technicianService } from "../../services/api";
 import { Trash2, Plus } from "lucide-react";
 
-const Bookings = ({ personId }) => {
+const Bookings = ({ userId }) => {
   const [bookings, setBookings] = useState([]);
   const [technicians, setTechnicians] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -18,7 +18,7 @@ const Bookings = ({ personId }) => {
       try {
         setIsLoading(true);
         const bookingsResponse = await bookingService.getBookings({
-          clientId: personId,
+          clientId: userId,
         });
         setBookings(bookingsResponse.data);
 
@@ -32,14 +32,14 @@ const Bookings = ({ personId }) => {
     };
 
     fetchData();
-  }, [personId]);
+  }, [userId]);
 
   const handleCreateBooking = async (e) => {
     e.preventDefault();
     try {
       const response = await bookingService.createBooking({
         ...newBooking,
-        clientId: personId,
+        clientId: userId,
       });
       setBookings([...bookings, response.data]);
       setShowModal(false);
@@ -101,7 +101,7 @@ const Bookings = ({ personId }) => {
                   <div className="text-sm">
                     {/* Dados da Reserva traduzidos e formatados */}
                     <p className="font-semibold text-pink-700">
-                      Data: {new Date(booking.dateTime).toLocaleString("pt-BR")}
+                      Data: {new Date(booking.dateTime).toISOString()}
                     </p>
                     <p className="text-gray-700">
                       Profissional:{" "}

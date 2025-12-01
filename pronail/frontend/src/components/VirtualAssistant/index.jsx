@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Send } from "lucide-react";
 import { aiInteractionService } from "../../services/api";
 
-const VirtualAssistant = ({ personId, initialMessage, setInitialMessage }) => {
+const VirtualAssistant = ({ userId, initialMessage, setInitialMessage }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -77,8 +77,8 @@ const VirtualAssistant = ({ personId, initialMessage, setInitialMessage }) => {
 
   const handleSendMessage = useCallback(async (messageText = input) => {
     if (messageText.trim()) {
-      const personMessage = { text: messageText, sender: "person" };
-      const updatedMessages = [...messages, personMessage];
+      const userMessage = { text: messageText, sender: "user" };
+      const updatedMessages = [...messages, userMessage];
       setMessages(updatedMessages);
       setInput("");
             
@@ -87,10 +87,10 @@ const VirtualAssistant = ({ personId, initialMessage, setInitialMessage }) => {
       try {
         const response = await aiInteractionService.virtualAssistant(
           updatedMessages.map((msg) => ({
-            role: msg.sender === "person" ? "person" : "assistant",
+            role: msg.sender === "user" ? "user" : "assistant",
             content: msg.text,
           })),
-          personId
+          userId
         );
         setIsTyping(false);
         const assistantMessage = {
@@ -115,7 +115,7 @@ const VirtualAssistant = ({ personId, initialMessage, setInitialMessage }) => {
         focusInput(); 
       }
     }
-  }, [input, messages, personId, focusInput]);
+  }, [input, messages, userId, focusInput]);
 
   
   useEffect(scrollToBottom, [messages]);
@@ -149,12 +149,12 @@ const VirtualAssistant = ({ personId, initialMessage, setInitialMessage }) => {
             <div
               key={index}
               className={`flex items-start space-x-2 ${
-                message.sender === "person" ? "justify-end" : ""
+                message.sender === "user" ? "justify-end" : ""
               }`}
             >        
               <div
                 className={`${
-                  message.sender === "person" ? "bg-pink-100" : "bg-gray-100"
+                  message.sender === "user" ? "bg-pink-100" : "bg-gray-100"
                 } rounded-lg p-3 max-w-[80%]`}
               >
                 {message.html ? (
