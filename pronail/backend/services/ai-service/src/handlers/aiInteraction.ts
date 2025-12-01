@@ -89,33 +89,3 @@ export const virtualAssistant: APIGatewayProxyHandler = async (event) => {
     };
   }
 };
-
-export const textToSpeech: APIGatewayProxyHandler = async (event) => {
-  try {
-    const { text, language } = JSON.parse(event.body!);
-
-    if (!text || !language) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: "Text and language are required" }),
-      };
-    }
-
-    const result = await aiInteractionService.textToSpeech(text, language);
-
-    return {
-      statusCode: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*", // If needed for CORS
-      },
-      body: JSON.stringify(result),
-    };
-  } catch (error) {
-    console.error("Text-to-speech error:", error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: "Failed to convert text to speech" }),
-    };
-  }
-};

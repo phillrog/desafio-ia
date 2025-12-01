@@ -79,12 +79,6 @@ functions:
           path: /ai-interactions/virtual-assistant
           method: post
 
-  textToSpeech:
-    handler: src/handlers/aiInteraction.textToSpeech
-    events:
-      - httpApi:
-          path: /ai-interactions/text-to-speech
-          method: post
 
 resources:
   Resources:
